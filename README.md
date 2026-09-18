@@ -1,0 +1,1 @@
+Trabajo de scripting en la carpeta de Assets está un archivo unit llamdo prueba, le hace click ahí y ahí está todo lo que se trabajó, perdón Ing., se me borró el anterior trabajo que estaba haciendo, por eso tuve que hacer todo de nuevo
