@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class Jugador : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float velocidad = 5f;
@@ -16,20 +16,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
     {
         movimiento = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(movimiento * velocidad, rb.linearVelocity.y);
-    }
-        
-}
-
-namespace herramientas.conectividad {
-    public partial class Herramienta
-    {
-        public int contador;
-        public int vida;
-        
-        public int calculoPuntaje()
-        {
-     
-            return 0; 
-        }
+        if (movimiento!=0) transform.localScale = new Vector3(Mathf.Sign(movimiento),1,1);
     }
 }
