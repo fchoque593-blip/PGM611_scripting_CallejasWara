@@ -1,4 +1,6 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Jugador : MonoBehaviour
 {
@@ -13,6 +15,11 @@ public class Jugador : MonoBehaviour
     public LayerMask layerPiso;
 
     private Animator animator;
+
+    private int cantAbejas = 0;
+    public TMP_Text textoAbejas;
+    private bool enRetroceso = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -22,9 +29,12 @@ public class Jugador : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        movimiento = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(movimiento * velocidad, rb.linearVelocity.y);
-        if (movimiento!=0) transform.localScale = new Vector3(Mathf.Sign(movimiento),1,1);
+        if (!enRetroceso)
+        {
+            movimiento = Input.GetAxisRaw("Horizontal");
+            rb.linearVelocity = new Vector2(movimiento * velocidad, rb.linearVelocity.y);
+            if (movimiento!=0) transform.localScale = new Vector3(Mathf.Sign(movimiento),1,1);
+        }
         if(Input.GetButtonDown("Jump")&&esPiso)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, alturaSalto);
         animator.SetFloat("Velocidad", Mathf.Abs(movimiento));
@@ -35,4 +45,36 @@ public class Jugador : MonoBehaviour
     {
         esPiso = Physics2D.OverlapCircle(comprobadorPiso.position, radioComprobadorPiso, layerPiso);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.transform.CompareTag("abejita"))
+        {
+            Destroy(collision.gameObject);
+            cantAbejas++;
+            textoAbejas.text = "" + cantAbejas;
+        }
+        if(collision.transform.CompareTag("puerquito"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        if (collision.transform.CompareTag("caracol"))
+        {
+            enRetroceso = true;
+            Vector2 arrastre = (rb.position - (Vector2)collision.transform.position).normalized * 3;
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(arrastre, ForceMode2D.Impulse);
+            Collider2D[] colliders = collision.GetComponents<Collider2D>();
+            foreach (Collider2D col in colliders)
+            col.enabled = false;
+            collision.GetComponent<Animator>().enabled = true;
+            Destroy(collision.gameObject, 0.4f);
+            Invoke(nameof(QuitarRetroceso), 0.2f);
+        }
+    }
+    void QuitarRetroceso()
+    {
+        enRetroceso = false;
+    }
 }
+
